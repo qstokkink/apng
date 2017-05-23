@@ -14,17 +14,6 @@
 
 ##
 #
-# REQUIREMENTS
-#
-##
-
-if (!require(bitops)){
-    install.packages('bitops', repos="http://cran.us.r-project.org")
-    library(bitops)
-}
-
-##
-#
 # UTIL
 #
 ##
@@ -105,7 +94,7 @@ READ_REMAINING_CHUNKS <- function(f) {
             break
         }
         t <- as.integer(chunk[[1]][['type']])
-        if ((t == c(73, 72, 68, 82)) || (t == c(73, 68, 65, 84)) || (t == c(73, 69, 78, 68))) {
+        if ((t == c(73, 72, 68, 82)) || (t == c(73, 68, 65, 84)) || (t == c(73, 69, 78, 68)) || (t == c(80, 76, 84, 69))) {
             all_chunks <- append(all_chunks, chunk)
         } else {
             print(paste("IGNORING PNG CHUNK TYPE", rawToChar(chunk[[1]][['type']]), "DATA LENGTH:", int_from_4_bytes(chunk[[1]][['length']])))
@@ -141,7 +130,13 @@ READ_PNG <- function(f) {
     file_descriptor[['idats']] <- list()
     file_descriptor[['ihdr']] <- PARSE_IHDR(all_chunks[[1]])
     for (i in 2:(chunk_length-1)){
-        file_descriptor[['idats']] <- append(file_descriptor[['idats']], list(all_chunks[[i]]))
+        chunk <- all_chunks[[i]]
+        if (all(as.integer(chunk[['type']]) == c(80, 76, 84, 69))){
+            file_descriptor[['plte']] <- chunk
+            print("WARNING PNG CONTAINS A PALETTE, PALETTE-LESS PNG (ex. png(type=\"cairo-png\")) IS VERY MUCH SUGGESTED")
+        } else {
+            file_descriptor[['idats']] <- append(file_descriptor[['idats']], list(chunk))
+        }
     }
     file_descriptor[['iend']] <- all_chunks[[chunk_length]]
 
@@ -153,8 +148,9 @@ READ_PNG <- function(f) {
 # CRC
 #
 ##
-CRC_TABLE <- vector(,256)
-CRC_TABLE_COMPUTED <- F
+local_env <- new.env(parent = baseenv())
+local_env$CRC_TABLE <- vector(,256)
+local_env$CRC_TABLE_COMPUTED <- F
 MAKE_CRC_TABLE <- function() {
     for (n in 1:256) {
         c <- n - 1
@@ -165,20 +161,20 @@ MAKE_CRC_TABLE <- function() {
                 c <- bitShiftR(c, 1)
             }
         }
-        CRC_TABLE[n] <<- c
+        local_env$CRC_TABLE[n] <- c
     }
-    CRC_TABLE_COMPUTED <<- T
+    local_env$CRC_TABLE_COMPUTED <- T
 }
 
 UPDATE_CRC <- function(crc, raw) {
     c <- crc
 
-    if (!CRC_TABLE_COMPUTED) {
+    if (!local_env$CRC_TABLE_COMPUTED) {
         MAKE_CRC_TABLE()
     }
 
     for (n in 1:length(raw)) {
-        c <- bitXor(CRC_TABLE[bitAnd(bitXor(c, raw[n]), 0xff) + 1], bitShiftR(c, 8))
+        c <- bitXor(local_env$CRC_TABLE[bitAnd(bitXor(c, raw[n]), 0xff) + 1], bitShiftR(c, 8))
     }
 
     return(c)
@@ -291,6 +287,9 @@ apng <- function(files) {
             print(paste("> CHUNK COUNT", length(contents[['idats']])))
             WRITE_PNG_SIGNATURE(file_output)
             WRITE_CHUNK(file_output, contents[['ihdr']])
+            if (!is.null(contents[['plte']])) {
+                WRITE_CHUNK(file_output, contents[['plte']])
+            }
             WRITE_CHUNK(file_output, TO_ACTL_CHUNK(length(files)))
             WRITE_CHUNK(file_output, TO_FCTL_CHUNK(sequence_number, ihdr_width, ihdr_height))
             sequence_number <- sequence_number + 1

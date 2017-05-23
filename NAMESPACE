@@ -1,0 +1,2 @@
+import(bitops)
+exportPattern("apng")
