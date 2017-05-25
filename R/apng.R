@@ -12,12 +12,14 @@
 #
 ##
 
-apng <- function(files) {
-    file_output <- file("output.png", "wb")
+apng <- function(...) {
+    options <- GENERATE_OPTIONS(...)
+    file_output <- file(options[['OUTPUT_FILE']], "wb")
     sequence_number <- 0
+    input_file_count <- length(options[['INPUT_FILES']])
 
-    for (f in 1:length(files)) {
-        file_input <- file(files[f], "rb")
+    for (f in 1:input_file_count) {
+        file_input <- file(options[['INPUT_FILES']][f], "rb")
 
         # [contents]
         #  signature: PNG signature
@@ -35,14 +37,26 @@ apng <- function(files) {
             if (!is.null(contents[['plte']])) {
                 WRITE_CHUNK(file_output, contents[['plte']])
             }
-            WRITE_CHUNK(file_output, TO_ACTL_CHUNK(length(files)))
-            WRITE_CHUNK(file_output, TO_FCTL_CHUNK(sequence_number, ihdr_width, ihdr_height))
+            WRITE_CHUNK(file_output, TO_ACTL_CHUNK(input_file_count, options[['NUM_PLAYS']]))
+            WRITE_CHUNK(file_output, TO_FCTL_CHUNK(sequence_number,
+                                                   ihdr_width,
+                                                   ihdr_height,
+                                                   delay_num = options[['DELAY_NUM']],
+                                                   delay_den = options[['DELAY_DEN']],
+                                                   dispose_op = options[['DISPOSE_OP']],
+                                                   blend_op = options[['BLEND_OP']]))
             sequence_number <- sequence_number + 1
             for (idat in contents[['idats']]){
                 WRITE_CHUNK(file_output, idat)
             }
         } else {
-            WRITE_CHUNK(file_output, TO_FCTL_CHUNK(sequence_number, ihdr_width, ihdr_height))
+            WRITE_CHUNK(file_output, TO_FCTL_CHUNK(sequence_number,
+                                                   ihdr_width,
+                                                   ihdr_height,
+                                                   delay_num = options[['DELAY_NUM']],
+                                                   delay_den = options[['DELAY_DEN']],
+                                                   dispose_op = options[['DISPOSE_OP']],
+                                                   blend_op = options[['BLEND_OP']]))
             sequence_number <- sequence_number + 1
             for (idat in contents[['idats']]){
                 WRITE_CHUNK(file_output, TO_FDAT_CHUNK(sequence_number, idat[['data']]))
@@ -50,7 +64,7 @@ apng <- function(files) {
             }
         }
 
-        if (f == length(files)){
+        if (f == input_file_count){
             WRITE_CHUNK(file_output, contents[['iend']])
         }
 

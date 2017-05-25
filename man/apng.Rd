@@ -2,10 +2,10 @@
 \alias{apng}
 \title{apng}
 \usage{
-apng(files)
+apng(...)
 }
 \arguments{
-  \item{files}{A vector of file names}
+  \item{...}{A vector of file names}
 }
 \value{
 Returns nothing, output is written to ``output.png''.
