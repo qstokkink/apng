@@ -1,4 +1,5 @@
-GENERATE_OPTIONS <- function(input_files, output_file="output.png", num_plays=0, delay_num=0, delay_den=0, dispose_op=APNG_DISPOSE_OP_NONE, blend_op=APNG_BLEND_OP_SOURCE) {
+# Validate and amend user input to form a complete set of options
+GENERATE_OPTIONS <- function(input_files=c(), output_file="output.png", num_plays=0, delay_num=0, delay_den=0, dispose_op=APNG_DISPOSE_OP_NONE, blend_op=APNG_BLEND_OP_SOURCE) {
     options <- list()
 
     options[['OUTPUT_FILE']] <- output_file

@@ -1,2 +1,7 @@
 import(bitops)
-exportPattern("apng")
+export(apng)
+export(APNG_DISPOSE_OP_NONE)
+export(APNG_DISPOSE_OP_BACKGROUND)
+export(APNG_DISPOSE_OP_PREVIOUS)
+export(APNG_BLEND_OP_SOURCE)
+export(APNG_BLEND_OP_OVER)

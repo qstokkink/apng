@@ -1,3 +1,6 @@
+# Base method to read some bytes from a file
+# Errors if the EOF is detected
+# Returns c() if count == 0, otherwise the read bytes as raw
 READ_BYTES <- function(f, count){
     if (count == 0) {
         return(c())
@@ -9,10 +12,12 @@ READ_BYTES <- function(f, count){
     return(r)
 }
 
+# Read the 8 byte PNG signature and return it
 READ_PNG_SIGNATURE <- function(f) {
     return(READ_BYTES(f, 8))
 }
 
+# Read an entire chunk from a file and return it
 READ_CHUNK <- function(f) {
     chunk <- list()
 
@@ -27,6 +32,7 @@ READ_CHUNK <- function(f) {
     return(list(chunk))
 }
 
+# Read all remaining chunks in a file and return them
 READ_REMAINING_CHUNKS <- function(f) {
     all_chunks <- list()
 
@@ -46,6 +52,7 @@ READ_REMAINING_CHUNKS <- function(f) {
     return(all_chunks)
 }
 
+# Parse an IHDR chunk and add its parsed contents to chunk[['ihdr']]
 PARSE_IHDR <- function(chunk) {
     ihdr <- list()
     ihdr[['width']] <- int_from_4_bytes(chunk[['data']][1:4])
@@ -61,6 +68,12 @@ PARSE_IHDR <- function(chunk) {
     return(chunk)
 }
 
+# Read a full PNG file and return a parsed description.
+# Returns a list with members:
+#  signature: PNG signature
+#  ihdr: IHDR chunk
+#  idats: list of IDAT chunks
+#  iend: IEND chunk
 READ_PNG <- function(f) {
     file_descriptor <- list()
 

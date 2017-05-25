@@ -1,10 +1,13 @@
 Package: apng
 Type: Package
-Title: Convert several png files into an animated png file
+Title: Convert Png Files into Animated Png
 Version: 1.0
 Date: 2017-05-23
 Author: Quinten Stokkink
-Maintainer: Quinten Stokkink <qstokkink@users.noreply.github.com>
+Maintainer: Quinten Stokkink <q.a.stokkink@tudelft.nl>
 Depends: bitops
-Description: Convert several png files into an animated png file
-License: LGPL-3.0 | file LICENSE
+Description: Convert several png files into an animated png file.
+  This package exports only a single function `apng'. Call the
+  apng function with a vector of file names (which should be
+  png files) to convert them to a single animated png file.
+License: GPL-3 | file LICENSE

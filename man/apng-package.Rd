@@ -1,6 +1,5 @@
 \name{apng-package}
 \alias{apng-package}
-\alias{apng}
 \docType{package}
 \title{
 \packageTitle{apng}
@@ -8,26 +7,13 @@
 \description{
 \packageDescription{apng}
 }
-\details{
-
-The DESCRIPTION file:
-\packageDESCRIPTION{apng}
-\packageIndices{apng}
-Call the apng function with a vector of file names (which should be png files) to convert them to a single animated png file.
-}
 \author{
 \packageAuthor{apng}
 
 Maintainer: \packageMaintainer{apng}
 }
-\keyword{ package }
-\examples{
-pdf(NULL)
-png(filename="1.png", type="cairo-png")
-plot(1:40, (1:40)^2)
-dev.off()
-png(filename="2.png", type="cairo-png")
-plot(1:40, .5*(1:40)^2)
-dev.off()
-apng(c("1.png", "2.png"))
+\references{\url{https://www.w3.org/TR/PNG/}\cr
+\url{https://wiki.mozilla.org/APNG_Specification}
 }
+\note{The CRC implementation in this package was adopted from the W3 Portable Network Graphics (PNG) Specification (Second Edition): Annex D - Sample Cyclic Redundancy Code implementation.
+As such, special thanks go out to the authors of the specification: \url{https://www.w3.org/TR/PNG/#F-Relationship}.}
