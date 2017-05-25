@@ -97,7 +97,7 @@ READ_REMAINING_CHUNKS <- function(f) {
         if ((t == c(73, 72, 68, 82)) || (t == c(73, 68, 65, 84)) || (t == c(73, 69, 78, 68)) || (t == c(80, 76, 84, 69))) {
             all_chunks <- append(all_chunks, chunk)
         } else {
-            print(paste("IGNORING PNG CHUNK TYPE", rawToChar(chunk[[1]][['type']]), "DATA LENGTH:", int_from_4_bytes(chunk[[1]][['length']])))
+            warning(paste("IGNORING PNG CHUNK TYPE", rawToChar(chunk[[1]][['type']]), "DATA LENGTH:", int_from_4_bytes(chunk[[1]][['length']])))
         }
     }
 
@@ -133,7 +133,7 @@ READ_PNG <- function(f) {
         chunk <- all_chunks[[i]]
         if (all(as.integer(chunk[['type']]) == c(80, 76, 84, 69))){
             file_descriptor[['plte']] <- chunk
-            print("WARNING PNG CONTAINS A PALETTE, PALETTE-LESS PNG (ex. png(type=\"cairo-png\")) IS VERY MUCH SUGGESTED")
+            warning("PNG CONTAINS A PALETTE, PALETTE-LESS PNG (ex. png(type=\"cairo-png\")) IS VERY MUCH SUGGESTED")
         } else {
             file_descriptor[['idats']] <- append(file_descriptor[['idats']], list(chunk))
         }
@@ -269,7 +269,6 @@ apng <- function(files) {
 
     for (f in 1:length(files)) {
         file_input <- file(files[f], "rb")
-        print(paste("READING FROM", files[f]))
 
         # [contents]
         #  signature: PNG signature
@@ -281,10 +280,7 @@ apng <- function(files) {
         ihdr_width <- contents[['ihdr']][['ihdr']][['width']]
         ihdr_height <- contents[['ihdr']][['ihdr']][['height']]
 
-        print(paste("WRITING FRAME", f-1, "W:", ihdr_width, "H:", ihdr_height))
         if (f == 1){
-            print("> THIS IS THE FIRST FRAME, EXTRACTING IHDR")
-            print(paste("> CHUNK COUNT", length(contents[['idats']])))
             WRITE_PNG_SIGNATURE(file_output)
             WRITE_CHUNK(file_output, contents[['ihdr']])
             if (!is.null(contents[['plte']])) {
@@ -297,7 +293,6 @@ apng <- function(files) {
                 WRITE_CHUNK(file_output, idat)
             }
         } else {
-            print(paste("> CHUNK COUNT", length(contents[['idats']])))
             WRITE_CHUNK(file_output, TO_FCTL_CHUNK(sequence_number, ihdr_width, ihdr_height))
             sequence_number <- sequence_number + 1
             for (idat in contents[['idats']]){
@@ -313,7 +308,6 @@ apng <- function(files) {
         close(file_input)
     }
     close(file_output)
-    print("DONE!")
 }
 
 # EXAMPLE USAGE:
