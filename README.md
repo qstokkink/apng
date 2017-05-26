@@ -2,11 +2,17 @@
 
 Pure R package to create animated png files from png files.
 
-## Installing
+## Installing (Latest GitHub W.I.P.)
 
 ```R
 library(devtools)
 install_github("qstokkink/apng")
+```
+
+## Installing (Latest Official C-RAN Release)
+
+```R
+install.packages("apng")
 ```
 
 ## Using
