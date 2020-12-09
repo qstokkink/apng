@@ -29,10 +29,10 @@ apng(my_vector_of_file_names)
 library(apng)
 
 pdf(NULL)
-png(filename="1.png", type="cairo-png")
+png(filename="1.png")
 plot(1:40, (1:40)^2)
 dev.off()
-png(filename="2.png", type="cairo-png")
+png(filename="2.png")
 plot(1:40, (-1*1:40)^3)
 dev.off()
 apng(c("1.png", "2.png"))
@@ -45,7 +45,7 @@ x <- 1:40
 frame_count <- 40
 
 for (i in 1:frame_count) {
-	png(filename=paste(i, ".png"), type="cairo-png")
+	png(filename=paste(i, ".png"))
 	plot(x, sin((i/x)%% 1) * (-1)^x,
 		ylim=c(-1,1),
 		col = ifelse(x == i, "red", "black"),

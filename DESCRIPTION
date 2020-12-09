@@ -1,8 +1,8 @@
 Package: apng
 Type: Package
 Title: Convert Png Files into Animated Png
-Version: 1.0
-Date: 2017-05-23
+Version: 1.1
+Date: 2020-12-09
 Author: Quinten Stokkink
 Maintainer: Quinten Stokkink <q.a.stokkink@tudelft.nl>
 Depends: bitops

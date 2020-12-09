@@ -42,7 +42,7 @@ READ_REMAINING_CHUNKS <- function(f) {
             break
         }
         t <- as.integer(chunk[[1]][['type']])
-        if ((t == c(73, 72, 68, 82)) || (t == c(73, 68, 65, 84)) || (t == c(73, 69, 78, 68)) || (t == c(80, 76, 84, 69))) {
+        if (all(t == c(73, 72, 68, 82)) || all(t == c(73, 68, 65, 84)) || all(t == c(73, 69, 78, 68)) || all(t == c(80, 76, 84, 69))) {
             all_chunks <- append(all_chunks, chunk)
         } else {
             warning(paste("IGNORING PNG CHUNK TYPE", rawToChar(chunk[[1]][['type']]), "DATA LENGTH:", int_from_4_bytes(chunk[[1]][['length']])))
